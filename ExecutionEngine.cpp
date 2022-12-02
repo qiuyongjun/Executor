@@ -25,7 +25,7 @@ void ExecutionEngine::execute()
     {
 
         ExecutionStatus status = getExecutionStatus();
-        qDebug()<<__FUNCTION__<<QThread::currentThreadId()<<QTime::currentTime().toString("hh:mm:ss.zzz")<<"---";
+        qDebug()<<__FUNCTION__<<QThread::currentThreadId()<<QTime::currentTime().toString("hh:mm:ss.zzz")<<"begin";
         switch (status)
         {
         case ExecutionStatus::ReadyPause:
@@ -70,8 +70,8 @@ void ExecutionEngine::execute()
         }
 
 
-        QThread::msleep(100);
-        qDebug()<<__FUNCTION__<<QThread::currentThreadId()<<QTime::currentTime().toString("hh:mm:ss.zzz");
+        QThread::msleep(1000);
+        qDebug()<<__FUNCTION__<<QThread::currentThreadId()<<QTime::currentTime().toString("hh:mm:ss.zzz")<<"end";
     }
 
     //执行结束
@@ -86,11 +86,31 @@ ExecutionStatus ExecutionEngine::getExecutionStatus()
 
 void ExecutionEngine::setExecutionStatus(ExecutionStatus status)
 {
+    switch (status)
+    {
+    case ExecutionStatus::Running:
+        qDebug()<<__FUNCTION__<<QThread::currentThreadId()<<QTime::currentTime().toString("hh:mm:ss.zzz")<<"Running";
+        break;
+    case ExecutionStatus::Paused:
+        qDebug()<<__FUNCTION__<<QThread::currentThreadId()<<QTime::currentTime().toString("hh:mm:ss.zzz")<<"Paused";
+        break;
+    case ExecutionStatus::Stopped:
+        qDebug()<<__FUNCTION__<<QThread::currentThreadId()<<QTime::currentTime().toString("hh:mm:ss.zzz")<<"Stopped";
+        break;
+    case ExecutionStatus::ReadyRun:
+        qDebug()<<__FUNCTION__<<QThread::currentThreadId()<<QTime::currentTime().toString("hh:mm:ss.zzz")<<"ReadyRun";
+        break;
+    case ExecutionStatus::ReadyPause:
+        qDebug()<<__FUNCTION__<<QThread::currentThreadId()<<QTime::currentTime().toString("hh:mm:ss.zzz")<<"ReadyPause";
+        break;
+    case ExecutionStatus::ReadyStop:
+        qDebug()<<__FUNCTION__<<QThread::currentThreadId()<<QTime::currentTime().toString("hh:mm:ss.zzz")<<"ReadyStop";
+        break;
+    }
+
     QWriteLocker locker(&statusRWL_);
     status_ = status;
     emit signal_executionStatusChanged(status_);
-
-    qDebug()<<__FUNCTION__<<QThread::currentThreadId()<<QTime::currentTime().toString("hh:mm:ss.zzz")<<status;
 
     switch (status)
     {
